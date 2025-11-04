@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h> 
+#include <stdbool.h> 
 
 // Desafio Tetris Stack
 // Tema 3 - Integração de Fila e Pilha
@@ -9,24 +11,40 @@
 #define MaxNome 1
 #define max 5
 
+typedef struct  
+{
+	char nome [MaxNome];
+	int id;
+}Pecas; 
+
+typedef struct
+{
+	Pecas p [max];
+	int inicio;
+	int fim;
+	int quantidade;
+}filas_pecas;
+
+
 /*
 	Funções Simples
 */
 void LimparBuffer();
-void LimpatTela();
+void LimparTela();
+
+/*
+	Para verificação de fila
+*/
+void iniciar_fila(filas_pecas * fila);
+void filaVazia(filas_pecas * fila, int *resultado);
+void filaCheia(filas_pecas * fila, int *resultado);
+
 /*
 	Menus
 */
 void MenuPrincipal(int * opcao);
 
 
-
-
-typedef struct  
-{
-	char nome [MaxNome];
-	int id;
-}Pecas; 
 
 int main() {
     // ?? Nível Novato: Fila de Peças Futuras
@@ -78,7 +96,34 @@ int main() {
 	do
 	{
 		MenuPrincipal(&opcao);
-		
+		switch(opcao)
+		{
+			case 1:
+			{
+				
+				break;
+			}
+			case 2:
+			{
+				break;
+			}
+			case 0:
+			{
+				printf("\n\nVoce esta saindo do programa\n");
+                printf("Digite ENTER para continuar..."); 
+                getchar();
+				break;
+			}
+			default:
+			{
+				printf("\n\nValor invalido! Voce sera mandado de volta ao menu principal\n");
+                printf("Digite ENTER para continuar..."); 
+                getchar();
+                
+                LimparTela();
+				break;
+			}
+		}
 	}while(opcao != 0);
 	
 
@@ -114,6 +159,47 @@ void LimparTela()
 
 
 
+//iniciar_fila()
+//Inicia a fila
+void iniciar_fila(filas_pecas * fila)
+{
+	fila->inicio = 0;
+	fila->fim = 0;
+	fila->quantidade = 0;
+}
+
+
+
+//filaVazia()
+//Para verificar se a fila esta vazia 
+void filaVazia(filas_pecas * fila, int *resultado)
+{
+	if (fila->quantidade == 0)
+	{
+		printf("Aviso: Fila Vazia!!\n");
+		printf("Digite ENTER para continuar..."); 
+        getchar();
+        resultado = 0;
+	}
+}
+
+
+
+
+//filaCheia()
+//Para verificar se a fila esta cheia 
+void filaCheia(filas_pecas * fila, int *resultado)
+{
+	if (fila->quantidade == max)
+	{
+		printf("Aviso: Fila Cheia!!\n");
+		printf("Digite ENTER para continuar..."); 
+        getchar();
+        resultado = 0;
+	}
+}
+
+
 //MenuPrincipal()
 //Exibe o menu principal e pega a escolha desejada
 void MenuPrincipal(int * opcao)
@@ -127,6 +213,7 @@ void MenuPrincipal(int * opcao)
 	
 	printf("Escolha a opcao desejada: ");
 	scanf("%d", opcao);
+	LimparBuffer();
 }
 
 
