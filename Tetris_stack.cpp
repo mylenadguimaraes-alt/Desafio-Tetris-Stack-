@@ -42,13 +42,17 @@ int filaCheia(filas_pecas *fila);
 	Para implementação de pecas na fila
 */
 Pecas GerarPeca (Pecas p);
-void enqueue(filas_pecas *fila, Pecas peca) ;
+void enqueue(filas_pecas *fila, Pecas peca, int mostrar) ;
 
 /*
 	Mostrar fila
 */
 void MostrarFila(filas_pecas * fila);
 
+/*
+	Tirar da fila
+*/
+void dequeue(filas_pecas *fila, Pecas *p, int * inserir);
 
 /*
 	Menus
@@ -108,15 +112,21 @@ int main() {
 	//Começo do código
 	int opcao;
 	
-	filas_pecas fila;
+	//Verifica se pode inserir uma nova peça 
+	//após jogar uma peça
+	//0 para não e 1 para sim
+	int inserir = 0;   
 	
+	filas_pecas fila;
+	Pecas pecas;
 	iniciar_fila(&fila);
+	
 	
 	
 	int i;
 	for (i = 0; i < capacidade; ++i) {
         Pecas p = GerarPeca(p);
-        enqueue(&fila, p);
+        enqueue(&fila, p, 0); 
     }
 	
 	
@@ -130,13 +140,20 @@ int main() {
 		{
 			case 1:
 			{
-				
+				dequeue(&fila, &pecas, &inserir);
+				if (inserir)
+				{
+					Pecas p = GerarPeca(p);
+        			enqueue(&fila, p, 0); 
+				}
+				LimparTela();
 				break;
 			}
 			case 2:
 			{
 				Pecas p = GerarPeca(p);
-        		enqueue(&fila, p);
+        		enqueue(&fila, p, 1);
+        		LimparTela();
 				break;
 			}
 			case 0:
@@ -253,7 +270,7 @@ void MenuPrincipal(int * opcao)
 
 //enqueue()
 //Insere a peça na fila
-void enqueue(filas_pecas *fila, Pecas peca) 
+void enqueue(filas_pecas *fila, Pecas peca, int mostrar) 
 {
 	int resultado = filaCheia(fila); // verifica se está cheia
     
@@ -268,6 +285,14 @@ void enqueue(filas_pecas *fila, Pecas peca)
     int pos = (fila->inicio + fila->quantidade) % capacidade;
     fila->p[pos] = peca;
     fila->quantidade++;
+    
+    if (mostrar){
+    	printf("\nPeca inserida com sucesso!\n");
+    	printf("Tipo: %c | ID: %d\n", fila->p[pos].nome, fila->p[pos].id);
+    	printf("Digite ENTER para continuar...");
+    	getchar();  
+	}
+
 }
 
 
@@ -298,8 +323,32 @@ void MostrarFila(filas_pecas * fila)
     }
 
     printf("\n======================================================\n\n");
-    
-	
 }
+
+void dequeue(filas_pecas *fila, Pecas *p, int * inserir)
+{
+	int resultado = filaVazia(fila); // verifica se está vazia
+    
+    if (resultado) // se for 1 (vazia)
+    {
+        printf("\nAviso: A fila esta vazia. Nao e possivel jogar uma peca.\n");
+        printf("Digite ENTER para continuar..."); 
+		getchar();
+		*inserir = 0;
+        return;
+    }
+    *p = fila->p[fila->inicio];            
+    fila->inicio = (fila->inicio + 1) % capacidade;    
+    fila->quantidade--;
+    
+    *inserir = 1;
+    
+	printf("\nPeca jogada com sucesso!\n");
+    printf("Tipo: %c | ID: %d\n", p->nome, p->id);
+    printf("Digite ENTER para continuar...");
+    getchar();  
+    
+}
+
 
 
