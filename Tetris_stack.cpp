@@ -60,7 +60,9 @@ void dequeue(filas_pecas *fila, Pecas *p, int * inserir, int mostrar);
 void iniciar_pilha(pilha_pecas * pilha);
 int pilhaVazia(pilha_pecas *pilha);
 int pilhaCheia(pilha_pecas *pilha);
-void push(filas_pecas *fila, pilha_pecas *pilha, int mostrar);
+void push(filas_pecas *fila, pilha_pecas *pilha, int mostrar, int *continuar);
+void MostrarPilha(pilha_pecas *pilha);
+void pop(filas_pecas *fila, pilha_pecas *pilha, int mostrar, int *continuar);
 
 
 /*
@@ -132,6 +134,10 @@ int main() {
 	//0 para não e 1 para sim
 	int inserir = 0;   
 	
+	//Para a execução em caso de erro
+	//0 para não e 1 para sim
+	int continuar = 0;
+	
 	filas_pecas fila;
 	Pecas pecas;
 	pilha_pecas pilha;
@@ -150,6 +156,7 @@ int main() {
 	do
 	{
 		MostrarFila(&fila);
+		MostrarPilha(&pilha);
 		MenuPrincipal(&opcao);
 
 
@@ -168,8 +175,18 @@ int main() {
 			}
 			case 2:
 			{
-				push(&fila, &pilha, 1);
-				dequeue(&fila, &pecas, &inserir, 1);
+				push(&fila, &pilha, 1, &continuar);
+				
+				if(continuar)
+				{
+					dequeue(&fila, &pecas, &inserir, 0);
+					if (inserir)
+					{
+						Pecas p = GerarPeca(p);
+        				enqueue(&fila, p, 0); 
+					}
+				}
+				LimparTela();
 				break;
 			}
 			case 0:
@@ -398,11 +415,16 @@ int pilhaCheia(pilha_pecas *pilha)
 	return (pilha->topo == capacidade_pilha - 1);
 }
 
-void push(filas_pecas *fila, pilha_pecas *pilha, int mostrar)
+
+
+//push()
+//Tira da fila e insere na fila
+void push(filas_pecas *fila, pilha_pecas *pilha, int mostrar, int *continuar)
 {
 	if (filaVazia(fila)) {
     	printf("\nAviso: A fila esta vazia. Nao ha peca para enviar para a reserva.\n");
         printf("Digite ENTER para continuar...");
+        *continuar = 0;
         getchar();
         return;
     }
@@ -411,6 +433,7 @@ void push(filas_pecas *fila, pilha_pecas *pilha, int mostrar)
 	{
         printf("\nAviso: A pilha de reserva esta cheia. Nao e possivel empilhar mais pecas.\n");
         printf("Digite ENTER para continuar...");
+        *continuar = 0;
         getchar();
         return;
     }
@@ -418,12 +441,58 @@ void push(filas_pecas *fila, pilha_pecas *pilha, int mostrar)
 	pilha->topo++;
     pilha->p[pilha->topo] = p;
 
-    printf("\nPeca copiada da fila para a pilha de reserva com sucesso!\n");
-    printf("Tipo: %c | ID: %d\n", p.nome, p.id);
-    printf("Digite ENTER para continuar...");
-    getchar();
+	*continuar = 1;
+	if(mostrar){
+    	printf("\nPeca copiada da fila para a pilha de reserva com sucesso!\n");
+    	printf("Tipo: %c | ID: %d\n", p.nome, p.id);
+    	printf("Digite ENTER para continuar...");
+    	getchar();
+	}
+}
+
+//MostrarPilha()
+//Mostra a pilha de reserva
+void MostrarPilha(pilha_pecas *pilha)
+{
+	int resultado = pilhaVazia(pilha); // verifica se está vazia
+	if (resultado)
+	{
+		printf("\n======================================================\n");
+        printf("                     Pilha de Reserva                   \n");
+        printf("======================================================\n");
+        printf("                Nenhuma peca disponivel               \n");
+        printf("======================================================\n\n");
+        return;	
+	}
+	printf("\n======================================================\n");
+    printf("                     Pilha de Reserva                   \n");
+    printf("======================================================\n");
+    
+    printf("Topo ->\n");
+    for (int i = pilha->topo; i >= 0; i--)
+    {
+        printf(" | %c (ID %d)\n", pilha->p[i].nome, pilha->p[i].id);
+    }
+    printf("Base\n");
+
+    printf("======================================================\n\n");
+
 }
 
 
+//pop()
+//Remove da pilha
+void pop(filas_pecas *fila, pilha_pecas *pilha, int mostrar, int *continuar)
+{
+	if (pilhaVazia(pilha)) 
+	{
+        printf("\nAviso: A pilha de reserva esta vazia. Nao e possivel usar peca reserva.\n");
+        printf("Digite ENTER para continuar...");
+        *continuar = 0;
+        getchar();
+        return;
+    }
+	
+}
 
 
