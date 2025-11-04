@@ -9,6 +9,7 @@
 // Use as instruções de cada nível para desenvolver o desafio.
 
 #define capacidade 5
+#define capacidade_pilha 3
 
 typedef struct  
 {
@@ -24,6 +25,13 @@ typedef struct
 	int quantidade;
 }filas_pecas;
 
+typedef struct 
+{
+	Pecas p [capacidade_pilha];
+	int topo;
+	int quantidade;
+}pilha_pecas;
+
 
 /*
 	Funções Simples
@@ -32,27 +40,28 @@ void LimparBuffer();
 void LimparTela();
 
 /*
-	Para verificação de fila
+	Funções de fila
 */
 void iniciar_fila(filas_pecas * fila);
 int filaVazia(filas_pecas *fila);
 int filaCheia(filas_pecas *fila);
+void enqueue(filas_pecas *fila, Pecas peca, int mostrar) ;
+void MostrarFila(filas_pecas * fila);
+void dequeue(filas_pecas *fila, Pecas *p, int * inserir, int mostrar);
 
 /*
-	Para implementação de pecas na fila
+	Funções para a pilha 
+*/
+void iniciar_pilha(pilha_pecas * pilha);
+int pilhaVazia(pilha_pecas *pilha);
+int pilhaCheia(pilha_pecas *pilha);
+
+
+/*
+	Gerar peças
 */
 Pecas GerarPeca (Pecas p);
-void enqueue(filas_pecas *fila, Pecas peca, int mostrar) ;
 
-/*
-	Mostrar fila
-*/
-void MostrarFila(filas_pecas * fila);
-
-/*
-	Tirar da fila
-*/
-void dequeue(filas_pecas *fila, Pecas *p, int * inserir);
 
 /*
 	Menus
@@ -119,8 +128,10 @@ int main() {
 	
 	filas_pecas fila;
 	Pecas pecas;
-	iniciar_fila(&fila);
+	pilha_pecas pilha;
 	
+	iniciar_fila(&fila);
+	iniciar_pilha(&pilha);
 	
 	
 	int i;
@@ -140,7 +151,7 @@ int main() {
 		{
 			case 1:
 			{
-				dequeue(&fila, &pecas, &inserir);
+				dequeue(&fila, &pecas, &inserir, 1);
 				if (inserir)
 				{
 					Pecas p = GerarPeca(p);
@@ -257,8 +268,9 @@ void MenuPrincipal(int * opcao)
 	printf("======================================================");
 	printf("\n                    MENU PRINCIPAL                    \n");
 	printf("======================================================");
-	printf("\n1. Jogar Peca(dequeue)\n");
-	printf("2. Inserir nova Peca(enqueue)\n");
+	printf("\n1. Jogar\n");
+	printf("2. Reservar\n");
+	printf("3. Usar peca reserva\n");
 	printf("0. Sair\n\n");
 	
 	printf("Escolha a opcao desejada: ");
@@ -325,7 +337,7 @@ void MostrarFila(filas_pecas * fila)
     printf("\n======================================================\n\n");
 }
 
-void dequeue(filas_pecas *fila, Pecas *p, int * inserir)
+void dequeue(filas_pecas *fila, Pecas *p, int * inserir, int mostrar)
 {
 	int resultado = filaVazia(fila); // verifica se está vazia
     
@@ -343,12 +355,37 @@ void dequeue(filas_pecas *fila, Pecas *p, int * inserir)
     
     *inserir = 1;
     
-	printf("\nPeca jogada com sucesso!\n");
-    printf("Tipo: %c | ID: %d\n", p->nome, p->id);
-    printf("Digite ENTER para continuar...");
-    getchar();  
-    
+    if(mostrar){
+		printf("\nPeca jogada com sucesso!\n");
+    	printf("Tipo: %c | ID: %d\n", p->nome, p->id);
+    	printf("Digite ENTER para continuar...");
+    	getchar();  
+	}
 }
+
+//iniciar_pilha()
+//Inicia a pilha 
+void iniciar_pilha(pilha_pecas * pilha)
+{
+	pilha->topo = 0;
+	pilha->quantidade = 0;
+}
+
+
+
+int pilhaVazia(pilha_pecas *pilha)
+{
+	return (pilha->quantidade == 0);
+}
+
+
+int pilhaCheia(pilha_pecas *pilha)
+{
+	return (pilha->quantidade == capacidade_pilha);
+}
+
+
+
 
 
 
