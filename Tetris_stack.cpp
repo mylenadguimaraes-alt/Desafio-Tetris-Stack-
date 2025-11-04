@@ -64,6 +64,11 @@ void push(filas_pecas *fila, pilha_pecas *pilha, int mostrar, int *continuar);
 void MostrarPilha(pilha_pecas *pilha);
 void pop(filas_pecas *fila, pilha_pecas *pilha, int mostrar, int *continuar);
 
+/*
+	Funções de troca
+*/
+void TrocaSingular(filas_pecas *fila, pilha_pecas *pilha, int mostrar, int *continuar);
+void TrocaMultipla(filas_pecas *fila, pilha_pecas *pilha, int mostrar, int *continuar);
 
 /*
 	Gerar peças
@@ -189,6 +194,25 @@ int main() {
 				LimparTela();
 				break;
 			}
+			case 3:
+			{
+				pop(&fila, &pilha, 1, &continuar);
+				LimparTela();
+				break;
+			}
+			case 4:
+			{
+				TrocaSingular(&fila, &pilha, 1, &continuar);
+				LimparTela();
+				break;
+			}
+			case 5:
+			{
+				TrocaMultipla(&fila, &pilha, 1, &continuar);
+				LimparTela();
+				break;
+			}
+			
 			case 0:
 			{
 				printf("\n\nVoce esta saindo do programa\n");
@@ -254,6 +278,28 @@ Pecas GerarPeca (Pecas p)
 }
 
 
+
+//MenuPrincipal()
+//Exibe o menu principal e pega a escolha desejada
+void MenuPrincipal(int * opcao)
+{
+	printf("======================================================");
+	printf("\n                    MENU PRINCIPAL                    \n");
+	printf("======================================================");
+	printf("\n1. Jogar\n");
+	printf("2. Reservar\n");
+	printf("3. Usar peca reserva\n");
+	printf("4. Trocar peca da frente da fila com o topo da pilha\n");
+	printf("5. Trocar os 3 primeiros da fila com as 3 pecas da pilha\n");
+	printf("0. Sair\n\n");
+	
+	printf("Escolha a opcao desejada: ");
+	scanf("%d", opcao);
+	LimparBuffer();
+}
+
+
+
 //Funções para a fila
 
 
@@ -284,24 +330,6 @@ int filaCheia(filas_pecas *fila)
 }
 
 
-
-
-//MenuPrincipal()
-//Exibe o menu principal e pega a escolha desejada
-void MenuPrincipal(int * opcao)
-{
-	printf("======================================================");
-	printf("\n                    MENU PRINCIPAL                    \n");
-	printf("======================================================");
-	printf("\n1. Jogar\n");
-	printf("2. Reservar\n");
-	printf("3. Usar peca reserva\n");
-	printf("0. Sair\n\n");
-	
-	printf("Escolha a opcao desejada: ");
-	scanf("%d", opcao);
-	LimparBuffer();
-}
 
 
 
@@ -492,7 +520,115 @@ void pop(filas_pecas *fila, pilha_pecas *pilha, int mostrar, int *continuar)
         getchar();
         return;
     }
+    
+    Pecas removida = pilha->p[pilha->topo];
+    pilha->topo--;
+
+	*continuar = 1;
+
+	if(mostrar)
+	{
 	
+    	printf("\nPeça removida da pilha de reserva!\n");
+    	printf("Tipo: %c | ID: %d\n", removida.nome, removida.id);
+    	printf("Digite ENTER para continuar...");
+    	getchar();
+	}
 }
+
+
+
+//Funções de troca
+
+
+//TrocaSingular()
+//Troca o primeiro elemento da fila e o último da pilha
+void TrocaSingular(filas_pecas *fila, pilha_pecas *pilha, int mostrar, int *continuar)
+{
+	if (pilhaVazia(pilha)) 
+	{
+        printf("\nAviso: A pilha de reserva esta vazia. Nao e possivel fazer troca.\n");
+        printf("Digite ENTER para continuar...");
+        *continuar = 0;
+        getchar();
+        return;
+    }
+    if (filaVazia(fila)) {
+    	printf("\nAviso: A fila esta vazia. Nao e possivel fazer troca.\n");
+        printf("Digite ENTER para continuar...");
+        *continuar = 0;
+        getchar();
+        return;
+    }
+    int filaInicio = fila->inicio;
+    int pilhaTopo = pilha->topo;
+	
+	Pecas temp = fila->p[filaInicio];
+	fila->p[filaInicio] = pilha->p[pilhaTopo];
+	pilha->p[pilhaTopo] = temp;
+	
+	
+	if(mostrar)
+	{
+		printf("\nTroca realizada com sucesso!\n");
+    	printf("Fila (frente) agora: [%c %d]\n", fila->p[filaInicio].nome, fila->p[filaInicio].id);
+    	printf("Pilha (topo) agora:  [%c %d]\n", pilha->p[pilhaTopo].nome, pilha->p[pilhaTopo].id);
+    	printf("Digite ENTER para continuar...");
+    	getchar();
+	}    
+    
+}
+
+
+//TrocaMultipla()
+//Troca os 3 elementos da pilha por 3 elementos da fila
+void TrocaMultipla(filas_pecas *fila, pilha_pecas *pilha, int mostrar, int *continuar)
+{
+    if(fila->quantidade < 3)
+	{
+		printf("\nAviso: Quantidade de fila insuficiente. Nao e possivel fazer a troca.\n");
+        printf("Digite ENTER para continuar...");
+        *continuar = 0;
+        getchar();
+        return;	
+	}
+	if(pilha->topo < 3 - 1)
+	{
+		printf("\nAviso: Quantidade de pilha insuficiente. Nao e possivel fazer a troca.\n");
+        printf("Digite ENTER para continuar...");
+        *continuar = 0;
+        getchar();
+        return;	
+	}
+	
+	// === Trocas ===
+    for (int i = 0; i < 3; i++) {
+        int idxFila = (fila->inicio + i) % capacidade; // índice circular da fila
+        int idxPilha = pilha->topo - i;                // do topo para baixo
+
+        Pecas temp = fila->p[idxFila];
+        fila->p[idxFila] = pilha->p[idxPilha];
+        pilha->p[idxPilha] = temp;
+    }
+
+    // === Mostrar resultado ===
+    if (mostrar) {
+        printf("\nTrocas realizadas com sucesso!\n\n");
+
+        for (int i = 0; i < 3; i++) {
+            int idxFila = (fila->inicio + i) % capacidade;
+            int idxPilha = pilha->topo - i;
+
+            printf("Fila %do agora:  [%c %d]\n", i + 1, fila->p[idxFila].nome, fila->p[idxFila].id);
+            printf("Pilha %do agora: [%c %d]\n\n", i + 1, pilha->p[idxPilha].nome, pilha->p[idxPilha].id);
+        }
+        printf("Digite ENTER para continuar...");
+        getchar();
+    }
+	
+
+}
+
+
 
 
