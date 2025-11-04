@@ -11,12 +11,16 @@
 #define capacidade 5
 #define capacidade_pilha 3
 
+
+//struct para as peças
 typedef struct  
 {
 	char nome;
 	int id;
 }Pecas; 
 
+
+//struct para a fila
 typedef struct
 {
 	Pecas p [capacidade];
@@ -25,11 +29,12 @@ typedef struct
 	int quantidade;
 }filas_pecas;
 
+
+//struct para a pilha
 typedef struct 
 {
 	Pecas p [capacidade_pilha];
 	int topo;
-	int quantidade;
 }pilha_pecas;
 
 
@@ -55,6 +60,7 @@ void dequeue(filas_pecas *fila, Pecas *p, int * inserir, int mostrar);
 void iniciar_pilha(pilha_pecas * pilha);
 int pilhaVazia(pilha_pecas *pilha);
 int pilhaCheia(pilha_pecas *pilha);
+void push(filas_pecas *fila, pilha_pecas *pilha, int mostrar);
 
 
 /*
@@ -162,9 +168,8 @@ int main() {
 			}
 			case 2:
 			{
-				Pecas p = GerarPeca(p);
-        		enqueue(&fila, p, 1);
-        		LimparTela();
+				push(&fila, &pilha, 1);
+				dequeue(&fila, &pecas, &inserir, 1);
 				break;
 			}
 			case 0:
@@ -220,6 +225,21 @@ void LimparTela()
 
 
 
+//GererPeca()
+//Gera uma peca por vez
+Pecas GerarPeca (Pecas p)
+{
+	const char tipos[] = {'I', 'O', 'T', 'L'};
+	
+	p.nome = tipos[rand() % (sizeof(tipos) / sizeof(tipos[0]))];
+    p.id = proximoId++;
+    return p;
+}
+
+
+//Funções para a fila
+
+
 //iniciar_fila()
 //Inicia a fila
 void iniciar_fila(filas_pecas * fila)
@@ -246,18 +266,6 @@ int filaCheia(filas_pecas *fila)
     return (fila->quantidade == capacidade);
 }
 
-
-
-//GererPeca()
-//Gera uma peca por vez
-Pecas GerarPeca (Pecas p)
-{
-	const char tipos[] = {'I', 'O', 'T', 'L'};
-	
-	p.nome = tipos[rand() % (sizeof(tipos) / sizeof(tipos[0]))];
-    p.id = proximoId++;
-    return p;
-}
 
 
 
@@ -363,28 +371,58 @@ void dequeue(filas_pecas *fila, Pecas *p, int * inserir, int mostrar)
 	}
 }
 
+//Funções da pilha
+
 //iniciar_pilha()
 //Inicia a pilha 
 void iniciar_pilha(pilha_pecas * pilha)
 {
-	pilha->topo = 0;
-	pilha->quantidade = 0;
+	pilha->topo = -1;
 }
 
 
-
+//pilhaVazia()
+//Verifica se a pilha esta vazia
 int pilhaVazia(pilha_pecas *pilha)
 {
-	return (pilha->quantidade == 0);
+	return (pilha->topo == -1);
 }
 
 
+
+
+//pilhaCheia()
+//Verifica se a pilha esta cheia
 int pilhaCheia(pilha_pecas *pilha)
 {
-	return (pilha->quantidade == capacidade_pilha);
+	return (pilha->topo == capacidade_pilha - 1);
 }
 
+void push(filas_pecas *fila, pilha_pecas *pilha, int mostrar)
+{
+	if (filaVazia(fila)) {
+    	printf("\nAviso: A fila esta vazia. Nao ha peca para enviar para a reserva.\n");
+        printf("Digite ENTER para continuar...");
+        getchar();
+        return;
+    }
 
+    if (pilhaCheia(pilha)) 
+	{
+        printf("\nAviso: A pilha de reserva esta cheia. Nao e possivel empilhar mais pecas.\n");
+        printf("Digite ENTER para continuar...");
+        getchar();
+        return;
+    }
+    Pecas p = fila->p[fila->inicio];
+	pilha->topo++;
+    pilha->p[pilha->topo] = p;
+
+    printf("\nPeca copiada da fila para a pilha de reserva com sucesso!\n");
+    printf("Tipo: %c | ID: %d\n", p.nome, p.id);
+    printf("Digite ENTER para continuar...");
+    getchar();
+}
 
 
 
