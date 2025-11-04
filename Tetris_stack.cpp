@@ -8,18 +8,17 @@
 // Este código inicial serve como base para o desenvolvimento do sistema de controle de peças.
 // Use as instruções de cada nível para desenvolver o desafio.
 
-#define MaxNome 1
-#define max 5
+#define capacidade 5
 
 typedef struct  
 {
-	char nome [MaxNome];
+	char nome;
 	int id;
 }Pecas; 
 
 typedef struct
 {
-	Pecas p [max];
+	Pecas p [capacidade];
 	int inicio;
 	int fim;
 	int quantidade;
@@ -36,13 +35,29 @@ void LimparTela();
 	Para verificação de fila
 */
 void iniciar_fila(filas_pecas * fila);
-void filaVazia(filas_pecas * fila, int *resultado);
-void filaCheia(filas_pecas * fila, int *resultado);
+int filaVazia(filas_pecas *fila);
+int filaCheia(filas_pecas *fila);
+
+/*
+	Para implementação de pecas na fila
+*/
+Pecas GerarPeca (Pecas p);
+void enqueue(filas_pecas *fila, Pecas peca) ;
+
+/*
+	Mostrar fila
+*/
+void MostrarFila(filas_pecas * fila);
+
 
 /*
 	Menus
 */
 void MenuPrincipal(int * opcao);
+
+
+/* contador global para ids */
+int proximoId = 0;
 
 
 
@@ -93,9 +108,24 @@ int main() {
 	//Começo do código
 	int opcao;
 	
+	filas_pecas fila;
+	
+	iniciar_fila(&fila);
+	
+	
+	int i;
+	for (i = 0; i < capacidade; ++i) {
+        Pecas p = GerarPeca(p);
+        enqueue(&fila, p);
+    }
+	
+	
 	do
 	{
+		MostrarFila(&fila);
 		MenuPrincipal(&opcao);
+
+
 		switch(opcao)
 		{
 			case 1:
@@ -105,6 +135,8 @@ int main() {
 			}
 			case 2:
 			{
+				Pecas p = GerarPeca(p);
+        		enqueue(&fila, p);
 				break;
 			}
 			case 0:
@@ -146,6 +178,7 @@ void LimparBuffer()
     while((c=getchar()) != '\n' && c != EOF); 
 }
 
+
 //LimparTela()
 //Limpa a tela ao executar algo
 void LimparTela()
@@ -169,18 +202,10 @@ void iniciar_fila(filas_pecas * fila)
 }
 
 
-
 //filaVazia()
 //Para verificar se a fila esta vazia 
-void filaVazia(filas_pecas * fila, int *resultado)
-{
-	if (fila->quantidade == 0)
-	{
-		printf("Aviso: Fila Vazia!!\n");
-		printf("Digite ENTER para continuar..."); 
-        getchar();
-        resultado = 0;
-	}
+int filaVazia(filas_pecas *fila) {
+    return (fila->quantidade == 0);
 }
 
 
@@ -188,16 +213,24 @@ void filaVazia(filas_pecas * fila, int *resultado)
 
 //filaCheia()
 //Para verificar se a fila esta cheia 
-void filaCheia(filas_pecas * fila, int *resultado)
+int filaCheia(filas_pecas *fila) 
 {
-	if (fila->quantidade == max)
-	{
-		printf("Aviso: Fila Cheia!!\n");
-		printf("Digite ENTER para continuar..."); 
-        getchar();
-        resultado = 0;
-	}
+    return (fila->quantidade == capacidade);
 }
+
+
+
+//GererPeca()
+//Gera uma peca por vez
+Pecas GerarPeca (Pecas p)
+{
+	const char tipos[] = {'I', 'O', 'T', 'L'};
+	
+	p.nome = tipos[rand() % (sizeof(tipos) / sizeof(tipos[0]))];
+    p.id = proximoId++;
+    return p;
+}
+
 
 
 //MenuPrincipal()
@@ -217,5 +250,56 @@ void MenuPrincipal(int * opcao)
 }
 
 
+
+//enqueue()
+//Insere a peça na fila
+void enqueue(filas_pecas *fila, Pecas peca) 
+{
+	int resultado = filaCheia(fila); // verifica se está cheia
+    
+    if (resultado) // se for 1 (cheia)
+    {
+        printf("\nAviso: A fila esta cheia. Nao e possivel inserir uma nova peca.\n");
+        printf("Digite ENTER para continuar..."); 
+		getchar();
+        return;
+    }
+    
+    int pos = (fila->inicio + fila->quantidade) % capacidade;
+    fila->p[pos] = peca;
+    fila->quantidade++;
+}
+
+
+//MostrarFila()
+//Mostra a fila armazenada
+void MostrarFila(filas_pecas * fila)
+{
+	int resultado = filaVazia(fila); // verifica se está vazia
+	if (resultado)
+	{
+		printf("\n======================================================\n");
+        printf("            Fila de Pecas Futuras (Vazia)            \n");
+        printf("======================================================\n");
+        printf("                Nenhuma peca disponivel               \n");
+        printf("======================================================\n\n");
+        return;	
+	}
+	printf("\n======================================================\n");
+    printf("                     Fila de Pecas\n");
+    printf("======================================================\n");
+    
+    // Percorre a fila circularmente e mostra cada peça
+    int i;
+	for (i = 0; i < fila->quantidade; i++)
+    {
+        int pos = (fila->inicio + i) % capacidade;
+        printf("[%c %d] ", fila->p[pos].nome, fila->p[pos].id);
+    }
+
+    printf("\n======================================================\n\n");
+    
+	
+}
 
 
