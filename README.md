@@ -2,7 +2,7 @@
 
 ## Sobre o Projeto
 
-Tetris Stack é um projeto desenvolvido em linguagem C++ inspirado no sistema de gerenciamento de peças do jogo Tetris. O programa simula a organização e manipulação de peças utilizando duas estruturas de dados fundamentais: fila e pilha.
+Tetris Stack é um projeto desenvolvido em linguagem C/C++ inspirado no sistema de gerenciamento de peças do jogo Tetris. O programa simula a organização e manipulação de peças utilizando duas estruturas de dados fundamentais: fila e pilha.
 
 O objetivo do projeto é demonstrar o funcionamento dessas estruturas através de operações de inserção, remoção, reserva de peças e trocas estratégicas entre a fila principal e a pilha de reserva.
 
