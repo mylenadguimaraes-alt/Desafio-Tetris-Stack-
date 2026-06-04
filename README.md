@@ -22,7 +22,7 @@ O objetivo do projeto é demonstrar o funcionamento dessas estruturas através d
 
 | Arquivo | Descrição |
 |----------|------------|
-| Tetris_stack.c | Código-fonte do projeto |
+| Tetris_stack.cpp | Código-fonte do projeto |
 | Tetris_stack.exe | Executável do projeto |
 
 ## Como Executar
@@ -65,7 +65,7 @@ Tetris_Stack.exe
 
 ## Tecnologias Utilizadas
 
-- Linguagem C
+- Linguagem C++
 - Biblioteca stdio.h
 - Biblioteca stdlib.h
 - Biblioteca string.h
